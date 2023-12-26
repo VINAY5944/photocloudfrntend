@@ -1,25 +1,30 @@
-
 import axios from 'axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import rooturl from '../url';
 
-const userInfo = JSON.parse(localStorage.getItem("currentUserInfo"));
-
-const userId = userInfo.Id;
-const token = userInfo.token;
-const apiUrl = `${rooturl}/api/images`;
-
 export const fetchData = createAsyncThunk('yourData/fetchData', async () => {
-  const response = await axios.get(apiUrl, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: {
-      userId: userId,
-    },
-  });
-  const data = await response.data;
-  return data;
+  const userInfo = JSON.parse(localStorage.getItem("currentUserInfo"));
+  const userId = userInfo ? userInfo.Id : null;
+  const token = userInfo ? userInfo.token : null;
+
+  const apiUrl = `${rooturl}/api/images`;
+
+  try {
+    const response = await axios.get(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        userId: userId,
+      },
+    });
+
+    const data = response.data;
+    return data;
+  } catch (error) {
+    // Handle error if necessary
+    throw error;
+  }
 });
 
 const yourDataSlice = createSlice({
@@ -48,3 +53,4 @@ const yourDataSlice = createSlice({
 });
 
 export default yourDataSlice.reducer;
+
